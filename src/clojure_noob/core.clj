@@ -160,6 +160,13 @@ truck
 ;;(loop [var1 val1 var2 val2  var3 [demovec] ] ) ;; first iternation is implicit
 ;; After that recur function is used to fill in these values
 
+;; Do times is a good thing
+(dotimes [x 100]
+    (doto (Thread. (fn []
+                     (let [resource @resource]
+                       ;; use the resource here ...
+                       ))
+      .start)))
 
 (re-find #"^left-" "left-to-rot")
 
