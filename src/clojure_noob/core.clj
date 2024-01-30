@@ -364,3 +364,75 @@ truck
 (memoized-sleepy-identity "Hello World") ;; This is instant otherwise it will take time.
 
 
+
+;; Code to dosync
+ (dosync
+                     ;; record $10
+                     (alter total-donations + 10)
+                     ;; record one donation
+                     (alter count-donations inc))
+                   ;; do it again
+                   (recur)
+
+
+
+;; Repeat to use to generate the repeating seq
+(repeat 5 "x") -> ("x" "x" "x" "x" "x")
+;;Range
+(range 100) -> get range of 100 num
+;;Cycle
+
+(take 10 (cycle (range 0 3)))
+
+
+
+
+;; Apply and use 
+
+;; make 10 agents initialized to zero
+(def sums (map agent (repeat 10 0)))
+
+(def numbers (range 1000000)) ;; one million numbers
+
+;; loop through all numbers and round-robin the agents
+(doseq [[x agent] (map vector numbers (cycle sums))]
+  (send agent + x))
+
+;; wa
+it at most 10 seconds
+(apply await-for 10000 sums)
+
+;; sum up the answers in all ten agents
+(println (apply + (map deref sums)))
+
+
+
+;;Takes the funciton and aply juxt
+
+((juxt a b c) x) => [(a x) (b x) (c x)]
+
+;;LetFn
+(defn even2? [n]
+  (letfn [(neven? [n] (if (zero? n) true (nodd? (dec n))))
+          (nodd? [n] (if (zero? n) false (neven? (dec n))))]
+    (neven? n)))
+
+
+;; Map reduce with thread
+
+;;This is standard use case for map and reduce.
+
+(->> data 
+     (map (juxt :name :quantity identity)) 
+     (reduce (fn [m [key qty _]] 
+                (update m key (fnil (partial + qty) 0))) 
+             {}) 
+     (map #(hash-map :name (key %1) :quantity (val %1))))
+
+;;I am using identity to return the element in case you wish to use other properties in the map to determine uniqueness. If the map only contains two fields, then you could simplify it down to
+
+(->> data 
+     (mapcat #(repeat (:quantity %1) (:name %1))) 
+     (frequencies) 
+     (map #(hash-map :name (key %1) :quantity (val %1))))
+
