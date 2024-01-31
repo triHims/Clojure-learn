@@ -436,3 +436,26 @@ it at most 10 seconds
      (frequencies) 
      (map #(hash-map :name (key %1) :quantity (val %1))))
 
+
+;; Iteration functions
+( doall )  ;;-> realises all the lazy seq -> returns them as list
+
+(dorun)  ;; -> realises all the lazy seq -> returns nothing
+
+;; Instead of dorun map 
+;; Use run!
+
+;; Instead of doallMap use mapv
+
+
+(run!)  ;; -> similar to do all but doall can return all the element of lazy-seq, 
+      ;; This funciton can be thought as eager reduce
+
+(mapv) ;; -> similar to run! but accepts a function and maps over the seq eagerly
+
+;; Note do all just takes the list (coll / lazy-seq ) and no function
+
+(seq ) ;; Converts thing to seq
+(seq '(1))  ;;=> (1)
+(seq [1 2]) ;;=> (1 2)
+(seq "abc") ;;=> (\a \b \c)
